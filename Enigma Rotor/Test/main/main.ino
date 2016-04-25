@@ -9,11 +9,9 @@
 #include <util/delay.h>
 #include <Arduino.h>					//	nodig voor de init()
 #include <string.h>
-#include "Rotor.h"
 
 MY_USART myUsart;
 char command[30];
-Rotor rotor = Rotor();
 
 int main(void)
 {
@@ -23,37 +21,12 @@ int main(void)
 	myUsart.initUSART();				//	Serial.begin(9600);
 	_delay_ms(100);
 
-	DDRB |= (1 << PORTB5);
+	
 
 	while (1)
 	{
-		receiveCommand();
-		// compares the input command to a string
-		if (strcmp(command, "test") == 0) {
-			PORTB ^= (1 << PORTB5);
-			myUsart.println("Toggled\n");
-		} else if(strcmp(command, "rotateForward") == 0){
-			rotor.rotateForward();
-		} else if (strcmp(command, "getRotorLetter") == 0) {
-			myUsart.transmitByte(rotor.getRotorLetter());
-			myUsart.transmitByte('\n');
-		} else if (strcmp(command, "rotateBackwards") == 0) {
-			rotor.rotateBackwards();
-		} else if (strncmp(command, "getShiftedLetter", 16) == 0) {
-			myUsart.transmitByte(rotor.getShiftedLetter(command[strlen(command) - 1]));
-			myUsart.transmitByte('\n');
-		} else if (strncmp(command, "getLetter", 9) == 0) {
-			myUsart.transmitByte(rotor.getLetter(command[strlen(command) - 1]));
-			myUsart.transmitByte('\n');
-		} else if (strncmp(command, "getReverseLetter", 16) == 0) {
-			myUsart.transmitByte(rotor.getReverseLetter(command[strlen(command) - 1]));
-			myUsart.transmitByte('\n');
-		} else if (strncmp(command, "changeRingCfg", 13) == 0) {
-			rotor.changeRingConfiguration((uint8_t)command[strlen(command) - 1] - 48);
-		} else if (strncmp(command, "getReverseShiftedLetter", 23) == 0) {
-			myUsart.transmitByte(rotor.getShiftedReverseLetter(command[strlen(command) - 1]));
-			myUsart.transmitByte('\n');
-		}
+    char temp[] = "test";
+		sendCommand(temp);
 		
 		_delay_ms(100);
 	}
