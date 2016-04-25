@@ -18,7 +18,7 @@ Rotor::Rotor()
 	this->ringConfiguration = 0;
 	this->rotorPosition = 0;
 	this->rotorLetter = 'a';
-	this->triggerLetter = 'c';
+	this->triggerLetter = 'q';
 }
 
 void Rotor::rotateForward()
