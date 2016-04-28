@@ -14,6 +14,7 @@ Rotor::Rotor()
 	//char configuration[27] = "esovpzjayquirhxlnftgkdcmwb"; // Rotor IV configuration
 	//char configuration[27] = "vzbrgityupsdnhlxawmjqofeck"; // Rotor V configuration
 
+	// Fils the array with the corresponding rotor configuration
 	for (int i = 0; i < 26; i++) {
 		this->rotorConfiguration[i][1] = configuration[i];
 	}
@@ -21,10 +22,11 @@ Rotor::Rotor()
 	// Set standard values
 	this->ringConfiguration = 0;
 	this->rotorPosition = 0;
-	this->rotorLetter = 'a';
-	this->triggerLetter = 'q';
+	this->rotorLetter = 'a'; // Start position of the rotor letter displayed
+	this->triggerLetter = 'q'; // The trigger letters of the rotors I-V are unique
 }
 
+// Makes the rotor rotate forward
 void Rotor::rotateForward()
 {
 	// Sets the rotor Letter
@@ -44,6 +46,7 @@ void Rotor::rotateForward()
 	}
 }
 
+// Makes the rotor rotate backwards
 void Rotor::rotateBackwards()
 {
 	// Sets the rotor Letter
@@ -63,10 +66,16 @@ void Rotor::rotateBackwards()
 	}
 }
 
+// Changes the ring configuration of the rotor
 void Rotor::changeRingConfiguration(uint8_t change)
 {
+	// WARNING the change has to be one lower than the original ringConfiguration
+	// For Example: if the original ringConfiguration is 20 the change has to be 19
+
 	// Sets the rotor Position
 	uint8_t originalPosition = this->rotorPosition + this->ringConfiguration;
+
+	// Prevents that the rotorPosition gets lower than zero
 	if ((originalPosition - change) < 0) {
 		this->rotorPosition = (originalPosition + 26) - change;
 	}
@@ -76,19 +85,22 @@ void Rotor::changeRingConfiguration(uint8_t change)
 	this->ringConfiguration = change;
 }
 
+// Gets the encrypted letter from the right side of the rotor
 char Rotor::getLetter(char letter)
 {
 	return this->getShiftedReverseLetter(this->getInternalLetter(this->getShiftedLetter(letter)));
 }
 
+// Gets the encrypted letter from the left side of the rotor
 char Rotor::getReverseLetter(char letter)
 {
 	return this->getShiftedReverseLetter(this->getInternalReverseLetter(this->getShiftedLetter(letter)));
 }
 
+// Gets the shifted letter from the inner ring of contacts from the outside
 char Rotor::getShiftedLetter(char letter)
 {
-	// If rotorPosition is bigger than 'z'start over at 'a'
+	// If rotorPosition is bigger than 'z' start over at 'a'
 	if ((letter + this->rotorPosition) > 'z') {
 		return (letter + this->rotorPosition - 'z') + 'a' - 1;
 	}
@@ -97,9 +109,10 @@ char Rotor::getShiftedLetter(char letter)
 	}
 }
 
+// Gets the shifted letter from the inner ring of contacts from the inside
 char Rotor::getShiftedReverseLetter(char letter)
 {
-	// If rotorPosition is smaller than 'a'start over at 'z'
+	// If rotorPosition is smaller than 'a' start over at 'z'
 	if ((letter - this->rotorPosition) < 'a') {
 		return (letter - this->rotorPosition - 'a') + 'z' + 1;
 	}
@@ -108,6 +121,7 @@ char Rotor::getShiftedReverseLetter(char letter)
 	}
 }
 
+// Gets the letter that is being displayed
 char Rotor::getRotorLetter() {
 	return this->rotorLetter;
 }
@@ -134,6 +148,7 @@ char Rotor::getInternalReverseLetter(char letter)
 	}
 }
 
+// Gets the current trigger status of the rotor
 bool Rotor::getTriggered()
 {
 	if (this->triggerLetter == this->rotorLetter) {
