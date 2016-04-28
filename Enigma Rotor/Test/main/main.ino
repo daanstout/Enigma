@@ -53,6 +53,14 @@ int main(void)
 		} else if (strncmp(command, "getReverseShiftedLetter", 23) == 0) {
 			myUsart.transmitByte(rotor.getShiftedReverseLetter(command[strlen(command) - 1]));
 			myUsart.transmitByte('\n');
+		} else if (strncmp(command, "getTriggered", 12) == 0) {
+			if(rotor.getTriggered()) {
+				myUsart.println("De rotor is in de trigger positie");
+			}
+			else {
+				myUsart.println("De rotor is niet in de trigger positie");
+			}
+			myUsart.transmitByte('\n');
 		}
 		
 		_delay_ms(100);

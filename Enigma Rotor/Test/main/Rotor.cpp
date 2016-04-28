@@ -8,7 +8,11 @@ Rotor::Rotor()
 		this->rotorConfiguration[i][0] = 'a' + i;
 	}
 
-	char configuration[27] = "ekmflgdqvzntowyhxuspaibrcj";
+	char configuration[27] = "ekmflgdqvzntowyhxuspaibrcj"; // Rotor I configuration
+	//char configuration[27] = "ajdksiruxblhwtmcqgznpyfvoe"; // Rotor II configuration
+	//char configuration[27] = "bdfhjlcprtxvznyeiwgakmusqo"; // Rotor III configuration
+	//char configuration[27] = "esovpzjayquirhxlnftgkdcmwb"; // Rotor IV configuration
+	//char configuration[27] = "vzbrgityupsdnhlxawmjqofeck"; // Rotor V configuration
 
 	for (int i = 0; i < 26; i++) {
 		this->rotorConfiguration[i][1] = configuration[i];
@@ -86,7 +90,7 @@ char Rotor::getShiftedLetter(char letter)
 {
 	// If rotorPosition is bigger than 'z'start over at 'a'
 	if ((letter + this->rotorPosition) > 'z') {
-		return (letter + this->rotorPosition - 'z') + 'a';
+		return (letter + this->rotorPosition - 'z') + 'a' - 1;
 	}
 	else {
 		return letter + this->rotorPosition;
@@ -95,14 +99,9 @@ char Rotor::getShiftedLetter(char letter)
 
 char Rotor::getShiftedReverseLetter(char letter)
 {
-
-	if (this->ringConfiguration > 0) {
-		letter += 1;
-	}
-
 	// If rotorPosition is smaller than 'a'start over at 'z'
 	if ((letter - this->rotorPosition) < 'a') {
-		return (letter - this->rotorPosition - 'a') + 'z';
+		return (letter - this->rotorPosition - 'a') + 'z' + 1;
 	}
 	else {
 		return letter - this->rotorPosition;
