@@ -19,7 +19,13 @@ obj/default/hello_ucosii.o: hello_ucosii.c \
  C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//HAL/inc/sys/alt_dev.h \
  C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//HAL/inc/sys/alt_llist.h \
  C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//HAL/inc/priv/alt_dev_llist.h \
- C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//drivers/inc/altera_up_avalon_ps2.h
+ C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//drivers/inc/altera_up_avalon_ps2.h \
+ C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//drivers/inc/altera_avalon_pio_regs.h \
+ C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//HAL/inc/io.h \
+ C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//HAL/inc/alt_types.h \
+ C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//drivers/inc/altera_up_avalon_parallel_port.h \
+ C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//HAL/inc/sys/alt_warning.h \
+ C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//drivers/inc/altera_up_avalon_parallel_port_regs.h
 
 C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//HAL/inc/includes.h:
 
@@ -62,3 +68,15 @@ C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//HAL/inc/sys/alt_ll
 C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//HAL/inc/priv/alt_dev_llist.h:
 
 C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//drivers/inc/altera_up_avalon_ps2.h:
+
+C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//drivers/inc/altera_avalon_pio_regs.h:
+
+C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//HAL/inc/io.h:
+
+C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//HAL/inc/alt_types.h:
+
+C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//drivers/inc/altera_up_avalon_parallel_port.h:
+
+C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//HAL/inc/sys/alt_warning.h:
+
+C:/Users/daans/Documents/Eclipse_Projecten_Nios/Keyboard_bsp//drivers/inc/altera_up_avalon_parallel_port_regs.h:
