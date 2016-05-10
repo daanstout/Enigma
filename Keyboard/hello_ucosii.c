@@ -12,7 +12,8 @@ OS_STK task1_stk[TASK_STACKSIZE];
 OS_STK task2_stk[TASK_STACKSIZE];
 
 /* Definition of Task Priorities */
-#define BUF_SIZE 500000			// about 10 seconds of buffer (@ 48K samples/sec)#define BUF_THRESHOLD 96		// 75% of 128 word buffer
+#define BUF_SIZE 500000			// about 10 seconds of buffer (@ 48K samples/sec)
+#define BUF_THRESHOLD 96		// 75% of 128 word buffer
 #define TASK1_PRIORITY      1
 #define TASK2_PRIORITY      2
 #define BREAKCODE 0xF0
@@ -27,7 +28,14 @@ OS_STK task2_stk[TASK_STACKSIZE];
 
 // GPIO defines
 
-#define RX1 0x01000000 // D24#define TX1 0x02000000 // D25#define RX2 0x04000000 // D26#define TX2 0x08000000 // D27#define RX3 0x10000000 // D28#define TX3 0x20000000 // D29#define RX4 0x40000000 // D30#define TX4 0x80000000 // D31
+#define RX1 0x01000000 // D24
+#define TX1 0x02000000 // D25
+#define RX2 0x04000000 // D26
+#define TX2 0x08000000 // D27
+#define RX3 0x10000000 // D28
+#define TX3 0x20000000 // D29
+#define RX4 0x40000000 // D30
+#define TX4 0x80000000 // D31
 alt_up_parallel_port_dev *gpio_dev; //	gpio device
 // PS2 daan.
 int byte1;
@@ -60,8 +68,8 @@ void getJP5();
 
 //char/binary
 
-void charToBinary(char c, INT8U *binaryChar[15]);
-char binaryToChar(INT8U c[15]);
+void charToBinary(char c, char *binaryChar[10]);
+char binaryToChar(char c[10]);
 
 void task1(void* pdata) {
 	char strTemp[2];
@@ -78,20 +86,27 @@ void task1(void* pdata) {
 //		VGA_text(5, 5, strTemp);
 //		VGA_box(0, 0, 319, 239, 0);
 
-		INT8U test[15] = { 0, 1, 0, 0, 1, 1, 1, 0 };
-		unsigned char testChar = binaryToChar(test);
+		char test[10] = "01001110";
+		char testChar = binaryToChar(test);
 
-		printf("%c\n", testChar);
-
-		unsigned char test2 = 'N';
-		INT8U *testChar2[15];
+		//unsigned char test2 = 'N';
+		char *testChar2[10];
 		charToBinary(testChar, &testChar2);
 		int co;
-		for (co = 0; co < 8; co++) {
-			printf("%d", testChar2[co]);
-		}
-		printf("\n");
+//		for (co = 0; co < 8; co++) {
+//			printf("%d", testChar2[co] - '0');
+//		}
+//		printf("\n");
 
+		char tempo[10];
+		int i;
+		for (i = 0; i < 8; i++) {
+			tempo[i] = testChar2[i];
+		}
+
+		char testChar3;
+		testChar3 = binaryToChar(tempo);
+		printf("%c %d\n", testChar3, testChar3);
 	}
 }
 
@@ -201,23 +216,24 @@ void getJP5() {
 //	printf("set: %d %c\n", tempor, tempor);
 //}
 
-void charToBinary(char c, INT8U *binaryChar[15]) {
-	INT8U temp[15];
+void charToBinary(char c, char *binaryChar[10]) {
+	char temp[10];
 	int i;
 	for (i = 0; i < 8; i++) {
-		temp[i] = ((c >> i) & 1);
+		temp[i] = (((c >> i) & 1) + '0');
 	}
-	for(i = 0; i < 8; i++){
+	for (i = 0; i < 8; i++) {
 		binaryChar[7 - i] = temp[i];
 	}
 }
 
-char binaryToChar(INT8U c[15]) {
+char binaryToChar(char c[10]) {
 	unsigned char charBinary;
 	int i;
+
 	for (i = 0; i < 8; i++) {
 		charBinary = charBinary << 1;
-		charBinary = charBinary | c[i];
+		charBinary = charBinary | (c[i]) - '0';
 	}
 	return charBinary;
 }
