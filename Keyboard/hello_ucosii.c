@@ -7,8 +7,6 @@
 #include <altera_avalon_pio_regs.h>
 #include "altera_up_avalon_parallel_port.h"
 #include "string.h"
-//#include "altera_up_avalon_rs232.h"
-#include <altera_up_avalon_rs232.h>
 
 //======================tasks========================
 
@@ -16,18 +14,35 @@
 
 // Definition of Task Stacks
 #define   TASK_STACKSIZE       2048
-OS_STK taskMain_stk[TASK_STACKSIZE];
 
 // Definition of Task Priorities
-#define BUF_SIZE 500000			// about 10 seconds of buffer (@ 48K samples/sec)#define BUF_THRESHOLD 96		// 75% of 128 word buffer#define TASKMAIN_PRIORITY      1//=======================VGA=========================//---------------------Register----------------------volatile char * character_buffer = (char *) 0x09000000;	// VGA character buffer//--------------------Prototypes---------------------
-void VGA_text(int, int, char *);
-void VGA_box(int, int, int, int, short);
-void setLetterLijst();
-void readLetterLijst(char c);
+#define BUF_SIZE 500000			// about 10 seconds of buffer (@ 48K samples/sec)
+#define BUF_THRESHOLD 96		// 75% of 128 word buffer
+#define TASKMAIN_PRIORITY      1
 
 //---------------------Variables---------------------
 
-char letterLijst[26][7][5];
+OS_STK taskMain_stk[TASK_STACKSIZE];
+
+//=======================VGA=========================
+
+//---------------------Register----------------------
+
+volatile char * character_buffer = (char *) 0x09000000;	// VGA character buffer
+volatile short * pixel_buffer = (short *) 0x08000000;
+
+//--------------------Prototypes---------------------
+
+void VGA_text(int, int, char *);
+void VGA_box(int, int, int, int, short);
+void clearScreen();
+void setLetterLijst();
+void readLetterLijst(char c, int rotor);
+
+//---------------------Variables---------------------
+
+int y = 5;
+
 
 //=======================PS2=========================
 
@@ -40,11 +55,14 @@ volatile int * PS2_ptr = (int *) 0x10000100;  // PS/2 port address
 #define BREAKCODE	0xF0
 
 // Arrow keys defines
-#define UP		'8'
-#define RIGHT	'6'
-#define LEFT	'4'
-#define DOWN	'2'
-
+#define ENTER	'9'		// enter
+#define UP		'8'		// keypad 8
+#define ESC		'7'		// escape
+#define RIGHT	'6'		// keypad 6
+#define BKSP	'5'		// backspace
+#define LEFT	'4'		// keypad 4
+#define SPACE	'3'		// space
+#define DOWN	'2'		// keypad 2
 //--------------------Prototypes---------------------
 
 void PS2();
@@ -55,69 +73,94 @@ char getKey();
 int byte1;
 char letter;
 char * ascii[10];
+char strTemp[2];
 int PS2_data, RAVAIL;
 
 //=======================GPIO========================
 
 //---------------------Defines-----------------------
 
-#define RX0 0x00000000 // all zero#define TX0 0x00000000 // all zero#define RX1 0x01000000 // D24#define TX1 0x02000000 // D25#define RX2 0x04000000 // D26#define TX2 0x08000000 // D27#define RX3 0x10000000 // D28#define TX3 0x20000000 // D29#define RX4 0x40000000 // D30#define TX4 0x80000000 // D31//--------------------Prototypes---------------------char getChar(int TXPort, int TXShift);void sendChar(char c);void charToBinary(char c, char *binaryChar[10]);char binaryToChar(char c[10]);//---------------------Variables---------------------
+#define RX0 0x00000000 // all zero
+#define TX0 0x00000000 // all zero
+#define RX1 0x01000000 // D24
+#define TX1 0x02000000 // D25
+#define RX2 0x04000000 // D26
+#define TX2 0x08000000 // D27
+#define RX3 0x10000000 // D28
+#define TX3 0x20000000 // D29
+#define RX4 0x40000000 // D30
+#define TX4 0x80000000 // D31
+//--------------------Prototypes---------------------
+
+char getChar(int TXPort, int TXShift);
+void sendChar(char c);
+
+void charToBinary(char c, char *binaryChar[10]);
+char binaryToChar(char c[10]);
+
+//---------------------Variables---------------------
 int toggle = 0;
 int cycleCount = 0;
 char test5;
 alt_up_parallel_port_dev *gpio_dev; //	gpio device
 
-void alt_up_rs232_enable_read_interrupt(alt_up_rs232_dev *rs232);
-void alt_up_rs232_disable_read_interrupt(alt_up_rs232_dev *rs232);
-
-
-
 //=====================Functions=====================
 
 void taskMain(void* pdata) {
-	char strTemp[2];
+	int count = 5;
 	while (1) {
-//		PS2();
-//
-//		VGA_box(0, 0, 319, 239, 0);
-//
-//		strTemp[0] = getKey();
-//
-//		getJP5();
-//		//setJP5();
-//
-//		VGA_text(5, 5, strTemp);
-//		VGA_box(0, 0, 319, 239, 0);
-//
-//		char test[10] = "01001110";
-//		char testChar = binaryToChar(test);
-//
-//		//unsigned char test2 = 'N';
-//		char *testChar2[10];
-//		charToBinary(testChar, &testChar2);
-//
-//		char tempo[10];
-//		int i;
-//		for (i = 0; i < 8; i++) {
-//			tempo[i] = testChar2[i];
-//		}
-//
-//		char testChar3;
-//		testChar3 = binaryToChar(tempo);
-//		printf("%c %d\n", testChar3, testChar3);
+		PS2();
 
-//		test5 = getChar(TX1, 25);
-//		printf("%c\n", test5);
-//		if (test5 != 0) {
-//			OSTimeDlyHMSM(0, 0, 5, 0);
-//		}
-//		sendChar('N');
-		alt_up_parallel_port_write_data(gpio_dev, RX1);
+		VGA_box(0, 0, 319, 239, 0);
+
+		strTemp[0] = getKey();
+		strTemp[1] = '\0';
+
+		if (count <= 5) {
+			count = 5; //30 tekens per regel
+		} else if (count >= 35) {
+			count = 5;
+			y++;
+		} else if (y <= 5) {
+			y = 5;
+		}
+
+		if (strTemp[0] == ESC) {
+			clearScreen();
+			count = 5;
+			y = 5;
+		} else if (strTemp[0] == BKSP) {
+			if (count == 5 && y > 5) {
+				y--;
+				count = 35;
+			}
+			count--;
+			VGA_text(count, y, " ");
+			VGA_text(count + 40, y, " ");
+		} else if (strTemp[0] == SPACE) {
+			VGA_text(count, y, " ");
+			VGA_text(count + 40, y, " ");
+			count++;
+		} else if (strTemp[0] == ENTER) {
+			count = 5;
+			y++;
+		} else {
+			if (strTemp[0] != 0) {
+				VGA_text(count, y, strTemp);
+				VGA_text(count + 40, y, strTemp);
+				strTemp[0] = 0;
+				count++;
+
+			}
+		}
+		VGA_text(5, 5, strTemp);
+		VGA_box(0, 0, 319, 239, 0);
 	}
 }
 
 int main(void) {
 	VGA_box(0, 0, 319, 239, 0);
+	setLetterLijst();
 
 	gpio_dev = alt_up_parallel_port_open_dev("/dev/Expansion_JP5");	//	DE2-115 gpio
 	alt_up_parallel_port_set_port_direction(gpio_dev, TX1 + TX2 + TX3 + TX4);// set D0 as INPUT
@@ -126,17 +169,17 @@ int main(void) {
 
 	OSTaskCreateExt(taskMain,
 	NULL, (void *) &taskMain_stk[TASK_STACKSIZE - 1], TASKMAIN_PRIORITY,
-			TASKMAIN_PRIORITY, taskMain_stk,
-			TASK_STACKSIZE,
-			NULL, 0);
+	TASKMAIN_PRIORITY, taskMain_stk,
+	TASK_STACKSIZE,
+	NULL, 0);
 
 	OSStart();
 	return 0;
 }
 
-void VGA_box(int x1, int y1, int x2, int y2, short pixel_color) {
+void VGA_box(int x1, int y1, int x2, int y2, short pixel_color) { //320x240
 	int offset, row, col;
-	volatile short * pixel_buffer = (short *) 0x08000000;	// VGA pixel buffer
+	// VGA pixel buffer
 
 	/* assume that the box coordinates are valid */
 	for (row = y1; row <= y2; row++) {
@@ -148,15 +191,25 @@ void VGA_box(int x1, int y1, int x2, int y2, short pixel_color) {
 		}
 	}
 }
+
 void VGA_text(int x, int y, char * text_ptr) {
 	int offset;
 
 	/* assume that the text string fits on one line */
 	offset = (y << 7) + x;
 	while (*(text_ptr)) {
+
 		*(character_buffer + offset) = *(text_ptr);	// write to the character buffer
 		++text_ptr;
-		//++offset;
+		++offset;
+	}
+}
+
+void clearScreen() {
+	int i;
+	for (i = 0; i <= 60; i++) {
+		VGA_text(0, i,
+				"                                                                                                        ");
 	}
 }
 
@@ -185,6 +238,14 @@ char getKey() {
 		return RIGHT;
 	} else if (strcmp(ascii, "KP 4") == 0) {
 		return LEFT;
+	} else if (strcmp(ascii, "ESC") == 0) {
+		return ESC;
+	} else if (strcmp(ascii, "BKSP") == 0) {
+		return BKSP;
+	} else if (strcmp(ascii, "SPACE") == 0) {
+		return SPACE;
+	} else if (strcmp(ascii, "ENTER") == 0) {
+		return ENTER;
 	} else if ((tempo >= 'A' && tempo <= 'Z')) {//checks wether or not the received byte is a letter
 		if (strlen(ascii) == 1) {
 			tempo = tempo + 32;	//makes it a small letter instead of a capital
@@ -202,7 +263,7 @@ char getChar(int TXPort, int TXShift) {
 	recieved &= TXPort;		//		extract TX1 (D24)
 	recieved = recieved >> 25;//shift 25 bits to the right so it's either 1 or 0
 	if (recieved == 1) {			//if a 1 has been received (start-bit)
-		unsigned char charBinary;		//the eventual char that gets returned
+		unsigned char charBinary;	//the eventual char that gets returned
 		int i;
 		for (i = 0; i < 8; i++) {		//loop 8 times to get 1 byte
 			OSTimeDlyHMSM(0, 0, 0, 125);//wait 125 milliseconds before receiving the bit
@@ -293,198 +354,17 @@ char binaryToChar(char c[10]) {
 	return charBinary;		//return charBinary
 }
 
-void setLetterLijst() {
-	//letter A
-letterLijst[0][1] = {0,0,1,0,0};
-letterLijst[0][2] = {0,1,0,1,0};
-letterLijst[0][3] = {0,1,1,1,0};
-letterLijst[0][4] = {0,1,0,1,0};
-letterLijst[0][5] = {0,1,0,1,0};
-
-//letter B
-letterLijst[1][1] = {0,1,1,1,0};
-letterLijst[1][2] = {0,1,0,1,0};
-letterLijst[1][3] = {0,1,1,0,0};
-letterLijst[1][4] = {0,1,0,1,0};
-letterLijst[1][5] = {0,1,1,1,0};
-
-//letter C
-letterLijst[2][1] = {0,1,1,1,0};
-letterLijst[2][2] = {0,1,0,0,0};
-letterLijst[2][3] = {0,1,0,0,0};
-letterLijst[2][4] = {0,1,0,0,0};
-letterLijst[2][5] = {0,1,1,1,0};
-
-//letter D
-letterLijst[3][1] = {0,1,1,0,0};
-letterLijst[3][2] = {0,1,0,1,0};
-letterLijst[3][3] = {0,1,0,1,0};
-letterLijst[3][4] = {0,1,0,1,0};
-letterLijst[3][5] = {0,1,1,0,0};
-
-//letter E
-letterLijst[4][1] = {0,1,1,1,0};
-letterLijst[4][2] = {0,1,0,0,0};
-letterLijst[4][3] = {0,1,1,0,0};
-letterLijst[4][4] = {0,1,0,0,0};
-letterLijst[4][5] = {0,1,1,1,0};
-
-//letter F
-letterLijst[5][1] = {0,1,1,1,0};
-letterLijst[5][2] = {0,1,0,0,0};
-letterLijst[5][3] = {0,1,1,0,0};
-letterLijst[5][4] = {0,1,0,0,0};
-letterLijst[5][5] = {0,1,0,0,0};
-
-//letter G
-letterLijst[6][1] = {0,1,1,1,0};
-letterLijst[6][2] = {0,1,0,0,0};
-letterLijst[6][3] = {0,1,0,1,0};
-letterLijst[6][4] = {0,1,0,1,0};
-letterLijst[6][5] = {0,1,1,1,0};
-
-//letter H
-letterLijst[7][1] = {0,1,0,1,0};
-letterLijst[7][2] = {0,1,0,1,0};
-letterLijst[7][3] = {0,1,1,1,0};
-letterLijst[7][4] = {0,1,0,1,0};
-letterLijst[7][5] = {0,1,0,1,0};
-
-//letter I
-letterLijst[8][1] = {0,1,1,1,0};
-letterLijst[8][2] = {0,0,1,0,0};
-letterLijst[8][3] = {0,0,1,0,0};
-letterLijst[8][4] = {0,0,1,0,0};
-letterLijst[8][5] = {0,1,1,1,0};
-
-//letter J
-letterLijst[9][1] = {0,0,0,1,0};
-letterLijst[9][2] = {0,0,0,1,0};
-letterLijst[9][3] = {0,0,0,1,0};
-letterLijst[9][4] = {0,1,0,1,0};
-letterLijst[9][5] = {0,0,1,0,0};
-
-//letter K
-letterLijst[10][1] = {0,1,0,1,0};
-letterLijst[10][2] = {0,1,0,1,0};
-letterLijst[10][3] = {0,1,1,0,0};
-letterLijst[10][4] = {0,1,0,1,0};
-letterLijst[10][5] = {0,1,0,1,0};
-
-//letter L
-letterLijst[11][1] = {0,1,0,0,0};
-letterLijst[11][2] = {0,1,0,0,0};
-letterLijst[11][3] = {0,1,0,0,0};
-letterLijst[11][4] = {0,1,0,0,0};
-letterLijst[11][5] = {0,1,1,0,0};
-
-//letter M
-letterLijst[12][1] = {1,0,0,0,1};
-letterLijst[12][2] = {1,1,0,1,1};
-letterLijst[12][3] = {1,0,1,0,1};
-letterLijst[12][4] = {1,0,0,0,1};
-letterLijst[12][5] = {1,0,0,0,1};
-
-//letter N
-letterLijst[13][1] = {1,0,0,0,1};
-letterLijst[13][2] = {1,1,0,0,1};
-letterLijst[13][3] = {1,0,1,0,1};
-letterLijst[13][4] = {1,0,0,1,1};
-letterLijst[13][5] = {1,0,0,0,1};
-
-//letter O
-letterLijst[14][1] = {0,0,1,0,0};
-letterLijst[14][2] = {0,1,0,1,0};
-letterLijst[14][3] = {0,1,0,1,0};
-letterLijst[14][4] = {0,1,0,1,0};
-letterLijst[14][5] = {0,0,1,0,0};
-
-//letter P
-letterLijst[15][1] = {0,1,1,0,0};
-letterLijst[15][2] = {0,1,0,1,0};
-letterLijst[15][3] = {0,1,1,0,0};
-letterLijst[15][4] = {0,1,0,0,0};
-letterLijst[15][5] = {0,1,0,0,0};
-
-//letter Q
-letterLijst[16][1] = {0,1,1,1,0};
-letterLijst[16][2] = {0,1,0,1,0};
-letterLijst[16][3] = {0,1,1,1,0};
-letterLijst[16][4] = {0,0,1,0,0};
-letterLijst[16][5] = {0,0,0,1,0};
-
-//letter R
-letterLijst[17][1] = {0,1,1,1,0};
-letterLijst[17][2] = {0,1,0,1,0};
-letterLijst[17][3] = {0,1,1,1,0};
-letterLijst[17][4] = {0,1,1,0,0};
-letterLijst[17][5] = {0,1,0,1,0};
-
-//letter S
-letterLijst[18][1] = {0,1,1,1,0};
-letterLijst[18][2] = {0,1,0,0,0};
-letterLijst[18][3] = {0,1,1,1,0};
-letterLijst[18][4] = {0,0,0,1,0};
-letterLijst[18][5] = {0,1,1,1,0};
-
-//letter T
-letterLijst[19][1] = {0,1,1,1,0};
-letterLijst[19][2] = {0,0,1,0,0};
-letterLijst[19][3] = {0,0,1,0,0};
-letterLijst[19][4] = {0,0,1,0,0};
-letterLijst[19][5] = {0,0,1,0,0};
-
-//letter U
-letterLijst[20][1] = {0,1,0,1,0};
-letterLijst[20][2] = {0,1,0,1,0};
-letterLijst[20][3] = {0,1,0,1,0};
-letterLijst[20][4] = {0,1,0,1,0};
-letterLijst[20][5] = {0,1,1,1,0};
-
-//letter V
-letterLijst[21][1] = {0,1,0,1,0};
-letterLijst[21][2] = {0,1,0,1,0};
-letterLijst[21][3] = {0,1,0,1,0};
-letterLijst[21][4] = {0,1,0,1,0};
-letterLijst[21][5] = {0,0,1,0,0};
-
-//letter W
-letterLijst[22][1] = {1,0,0,0,1};
-letterLijst[22][2] = {1,0,0,0,1};
-letterLijst[22][3] = {1,0,1,0,1};
-letterLijst[22][4] = {1,1,0,1,1};
-letterLijst[22][5] = {1,0,0,0,1};
-
-//letter X
-letterLijst[23][1] = {0,1,0,1,0};
-letterLijst[23][2] = {0,1,0,1,0};
-letterLijst[23][3] = {0,0,1,0,0};
-letterLijst[23][4] = {0,1,0,1,0};
-letterLijst[23][5] = {0,1,0,1,0};
-
-//letter Y
-letterLijst[24][1] = {0,1,0,1,0};
-letterLijst[24][2] = {0,1,0,1,0};
-letterLijst[24][3] = {0,0,1,0,0};
-letterLijst[24][4] = {0,0,1,0,0};
-letterLijst[24][5] = {0,0,1,0,0};
-
-//letter Z
-letterLijst[25][1] = {0,1,1,1,0};
-letterLijst[25][2] = {0,0,0,1,0};
-letterLijst[25][3] = {0,0,1,0,0};
-letterLijst[25][4] = {0,1,0,0,0};
-letterLijst[25][5] = {0,1,1,1,0};
-
-}
-
-void readLetterLijst(char c, int rotor) {
-	int c1, c2;
-	for (c1 = 0; c1 < 5; c1++) {
-		for (c2 = 0; c2 < 7; c2++) {
-			if (letterLijst[c - 'a'][c1][c2] == 1) {
-				//drawStuff;
-			}
-		}
-	}
-}
+//void VGA_img(int x1, int y1, int x2, int y2) {
+//	int offset, row, col;
+//	// VGA pixel buffer
+//
+//	/* assume that the box coordinates are valid */
+//	for (row = y1; row <= y2; row++) {
+//		col = x1;
+//		while (col <= x2) {
+//			offset = (row << 9) + col;
+//			*(pixel_buffer + offset) = (int) img;// compute halfword address, set pixel
+//			++col;
+//		}
+//	}
+//}
