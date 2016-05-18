@@ -59,15 +59,20 @@ void put_char(char c)
 {
 volatile int * RS232_UART_ptr = (int *) 0x08200000; // RS232 UART address
 int control;
-control = *(RS232_UART_ptr + 1); // read the RS232_UART control register
-if (control & 0x00FF0000) // if space, write character, else ignore
-*(RS232_UART_ptr) |= c;
+
+// HET CONTROL REGISTER KLOPT NIET
+
+control = *(RS232_UART_ptr + 4); // read the RS232_UART control register
+if (control & 0x00FF0000) { // if space, write character, else ignore
+	*(RS232_UART_ptr) = c;
+	printf("Printed: %c", c);
+}
 }
 
 /* Prints "Hello World" and sleeps for three seconds */
 void task1(void* pdata)
 {
-	        INT8U command[10] = "";
+	        INT8U command[40] = "";
 	        INT8U characterCount = 0;
   while (1)
   { 
@@ -89,15 +94,16 @@ void task1(void* pdata)
         	}
         	if(strcmp(command, "hallo") == 0) {
         		OSTimeDlyHMSM(0,0,2,0);
-        	        	putchar('t');
-        	        	putchar('e');
-        	        	putchar('s');
-        	        	putchar('t');
-        	        	putchar('/');
+        	        	put_char('t');
+        	        	put_char('e');
+        	        	put_char('s');
+        	        	put_char('t');
+        	        	put_char('/');
+
 
         	        	volatile int * RS232_UART_ptr = (int *) 0x08200000; // RS232 UART address
         	        	        int control;
-        	        	        control = *(RS232_UART_ptr + 1);
+        	        	        control = *(RS232_UART_ptr + 4);
         	        	        if (control & 0x00FF0000) {
         	        	        	printf("Plek om te verzenden: %d\n", ((control & 0x00FF0000) >> 16));
         	        	        }
