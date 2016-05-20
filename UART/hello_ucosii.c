@@ -41,85 +41,85 @@ OS_STK    task2_stk[TASK_STACKSIZE];
 #define TASK1_PRIORITY      1
 #define TASK2_PRIORITY      2
 
-void get_char(INT8U *character, INT8U *available, INT8U *valid)
+#define UART_0 0x08200000
+
+char command[40] = "";
+
+char getChar(volatile int *UART_ID)
 {
-volatile int * RS232_UART_ptr = (int *) 0x08200000; // RS232 UART address
 int data;
-data = *(RS232_UART_ptr); // read the RS232_UART data register
-*available = (INT8U)((data & 0x00FF0000) >> 16);
-*valid = (INT8U)((data & 0x00008000) >> 8);
-if (data & 0x00008000) { // check RVALID to see if there is new data
-	*character = ((INT8U) data & 0xFF);
-} else {
-	*character = '\0';
-}
+data = *(UART_ID); // read the RS232_UART data register
+	if (data & 0x00008000) { // check RVALID to see if there is new data
+		char character = data & 0xFF;
+		if(((character >= 'a') && (character <= 'z')) || (character == '/')) {
+			return character;
+		}
+	} else {
+		return '\0';
+	}
 }
 
-void put_char(char c)
+void putChar(volatile int *UART_ID, char c)
 {
-volatile int * RS232_UART_ptr = (int *) 0x08200000; // RS232 UART address
 int control;
-
-// HET CONTROL REGISTER KLOPT NIET
-
-control = *(RS232_UART_ptr + 4); // read the RS232_UART control register
+control = *(UART_ID + 4); // read the RS232_UART control register
 if (control & 0x00FF0000) { // if space, write character, else ignore
-	*(RS232_UART_ptr) = c;
-	printf("Printed: %c", c);
+	*(UART_ID) = c;
 }
+}
+
+void sendCommand(volatile int *UART_ID, char string[]) {
+	int i;
+	for(i = 0; i < strlen(string); i++) {
+		putChar(UART_ID, string[i]);
+	}
+}
+
+void getCommand(volatile int *UART_ID) {
+	memset(command, 0, strlen(command));
+	command[0] = '\0';
+	INT8U finished = 0;
+	INT8U characterCount = 0;
+	char currentChar = '\0';
+
+	while(!finished) {
+		currentChar = getChar(UART_ID);
+		if(currentChar != '\0') {
+			if((currentChar >= 'a') || (currentChar = '/')) {
+				if(currentChar == '/') {
+					if(characterCount > 0) {
+						finished = 1;
+					}
+				} else {
+					command[characterCount] = currentChar;
+					characterCount++;
+				}
+			}
+		}
+		currentChar = '\0';
+	}
+	command[characterCount] = '\0';
+	//printf("Commando: %s\n", command);
 }
 
 /* Prints "Hello World" and sleeps for three seconds */
 void task1(void* pdata)
 {
-	        INT8U command[40] = "";
 	        INT8U characterCount = 0;
   while (1)
   { 
     //printf("Hello from task1\n");
-    volatile int * uart_ptr;
-        uart_ptr = (int *) 0x08200000;
 
-        INT8U ravail = 0;
-        INT8U character = '\0';
-        INT8U rvalid = 0;
-        get_char(&character, &ravail, &rvalid);
-        if((ravail > 0) && (character != '\0') && (rvalid)) {
-        	if((character >= 'a') && (character <= 'z')) {
-        		printf("Karakter: %c Decimaal van karakter: %d\n", character, character);
-    			printf("Aantal karakters beschikbaar: %d\n", ravail);
-    			command[characterCount] = character;
-    			characterCount++;
-    			printf("Command: %s\n", command);
-        	}
-        	if(strcmp(command, "hallo") == 0) {
-        		OSTimeDlyHMSM(0,0,2,0);
-        	        	put_char('t');
-        	        	put_char('e');
-        	        	put_char('s');
-        	        	put_char('t');
-        	        	put_char('/');
+        	getCommand(UART_0);
 
-
-        	        	volatile int * RS232_UART_ptr = (int *) 0x08200000; // RS232 UART address
-        	        	        int control;
-        	        	        control = *(RS232_UART_ptr + 4);
-        	        	        if (control & 0x00FF0000) {
-        	        	        	printf("Plek om te verzenden: %d\n", ((control & 0x00FF0000) >> 16));
-        	        	        }
+        		printf("Commando: %s\n", command);
+        		if(strcmp(command, "hallo") == 0) {
+        	        	sendCommand(UART_0, "test/");
 
         	        	memset(command, 0, strlen(command));
         	        	command[0] = '\0';
         	        	characterCount = 0;
-        	}
-        }
-
-
-
-
-        //putchar('a');
-        //putchar('/');
-    //OSTimeDlyHMSM(0, 0, 3, 0);
+        		}
   }
 }
 /* Prints "Hello World" and sleeps for three seconds */
