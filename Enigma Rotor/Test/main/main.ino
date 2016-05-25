@@ -24,14 +24,16 @@ int main(void)
 	_delay_ms(100);
 
 	DDRB |= (1 << PORTB5);
-
+	PORTB |= (1 << PORTB5);
+	//Test code
+	myUsart.println("hallo/\n");
 	while (1)
 	{
 		receiveCommand();
 		// compares the input command to a string
 		if (strcmp(command, "test") == 0) {
 			PORTB ^= (1 << PORTB5);
-			myUsart.println("Toggled\n");
+			myUsart.println("toggled/");
 		} else if(strcmp(command, "rotateForward") == 0){
 			rotor.rotateForward();
 		} else if (strcmp(command, "getRotorLetter") == 0) {
@@ -62,7 +64,10 @@ int main(void)
 			}
 			myUsart.transmitByte('\n');
 		}
-		
+		else if (strncmp(command, "a", 1) == 0) {
+			myUsart.println("Ontvangen");
+			PORTB ^= (1 << PORTB5);
+		}
 		_delay_ms(100);
 	}
 }
@@ -72,7 +77,7 @@ char receiveCommand() {
 	char key = myUsart.receiveByte();
 	// Empties the command string
 	emptyCommand();
-
+	
 	// Loops until the command has ended
 	while (key > 0) {
 		sprintf(command, "%s%c", command, key);
