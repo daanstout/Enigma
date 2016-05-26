@@ -45,26 +45,35 @@ int main(void)
 
 	while (1)
 	{
-		// compares the input command to a string
+		// compares the input command to a string and executes a task and clears the command
 		if(strcmp(command, "rotateForward") == 0){
 			rotor.rotateForward();
+			emptyCommand();
 		} else if (strcmp(command, "getRotorLetter") == 0) {
 			result = rotor.getRotorLetter();
+			emptyCommand();
 		} else if (strcmp(command, "rotateBackwards") == 0) {
 			rotor.rotateBackwards();
+			emptyCommand();
 		} else if (strncmp(command, "getShiftedLetter", 16) == 0) {
 			result = rotor.getShiftedLetter(command[strlen(command) - 1]);
+			emptyCommand();
 		} else if (strncmp(command, "getLetter", 9) == 0) {
 			result = rotor.getLetter(command[strlen(command) - 1]);
+			emptyCommand();
 		} else if (strncmp(command, "getReverseLetter", 16) == 0) {
 			result = rotor.getReverseLetter(command[strlen(command) - 1]);
+			emptyCommand();
 		} else if (strncmp(command, "changeRingCfg", 13) == 0) {
-			rotor.changeRingConfiguration((uint8_t)command[strlen(command) - 1] - 48);
+			rotor.changeRingConfiguration((uint8_t)(command[strlen(command) - 1] - 'a' + 1));
+			emptyCommand();
 		} else if (strncmp(command, "getReverseShiftedLetter", 23) == 0) {
 			result = rotor.getShiftedReverseLetter(command[strlen(command) - 1]);
+			emptyCommand();
 		} else if (strncmp(command, "getTriggered", 12) == 0) {
 			result = rotor.getTriggered();
-		}
+			emptyCommand();
+		}	
 	}
 }
 
