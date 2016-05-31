@@ -29,7 +29,7 @@ int main(){
     result[0] = '\0';         //leegt result
     result[1] = '\0';
     result[2] = '\0';
-    printCommand();
+    //printCommand();
     if(strncmp(command, "rotateForward", 13) == 0){           //als het commando van DE2 rotateForward is
       slaveSendCommand(command[14] - 37, "rotateForward/");
     }else if(strncmp(command, "getRotorLetter", 14) == 0){
@@ -59,6 +59,11 @@ int main(){
       myUsart.println(result);
     }else if(strncmp(command, "getPluggedLetter", 16) == 0){
       sprintf(result, "%c/", plugboard.getPluggedLetter(command[strlen(command) - 1]));
+      myUsart.println(result);
+    }else if(strncmp(command, "getReflector", 12) == 0){
+      slaveSendCommand(16, "getReflector", command[strlen(command) - 1]);
+      result[0] = slaveReceiveCommand(16);
+      result[1] = '/';
       myUsart.println(result);
     }
   }
