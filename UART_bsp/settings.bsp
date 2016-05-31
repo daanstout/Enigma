@@ -2,10 +2,10 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>ucosii</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>17-mei-2016 12:32:53</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1463481173056</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>27-mei-2016 14:54:13</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1464353653445</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>C:\NIOS_Project_Files\software\UART_bsp</BspGeneratedLocation>
-        <BspSettingsFile>.\settings.bsp</BspSettingsFile>
+        <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>..\..\nios_system.sopcinfo</SopcDesignFile>
         <JdiFile>default</JdiFile>
         <Cpu>Nios2</Cpu>
@@ -1739,8 +1739,14 @@
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>rs232_0</slaveDescriptor>
+                <slaveDescriptor>rs232_1</slaveDescriptor>
                 <addressRange>0x08200000 - 0x08200007</addressRange>
+                <addressSpan>8</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>rs232_0</slaveDescriptor>
+                <addressRange>0x08200008 - 0x0820000F</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes/>
         </MemoryMap>

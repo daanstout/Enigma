@@ -4,7 +4,7 @@
  * Machine generated for CPU 'Nios2' in SOPC Builder design 'nios_system'
  * SOPC Builder design path: ../../nios_system.sopcinfo
  *
- * Generated: Tue May 17 12:32:56 CEST 2016
+ * Generated: Fri May 27 11:56:04 CEST 2016
  */
 
 /*
@@ -519,7 +519,7 @@
 #define SYSID_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define SYSID_NAME "/dev/SysID"
 #define SYSID_SPAN 8
-#define SYSID_TIMESTAMP 1463471837
+#define SYSID_TIMESTAMP 1464342210
 #define SYSID_TYPE "altera_avalon_sysid_qsys"
 
 
@@ -673,12 +673,26 @@
  */
 
 #define ALT_MODULE_CLASS_rs232_0 altera_up_avalon_rs232
-#define RS232_0_BASE 0x8200000
+#define RS232_0_BASE 0x8200008
 #define RS232_0_IRQ 3
 #define RS232_0_IRQ_INTERRUPT_CONTROLLER_ID 0
 #define RS232_0_NAME "/dev/rs232_0"
 #define RS232_0_SPAN 8
 #define RS232_0_TYPE "altera_up_avalon_rs232"
+
+
+/*
+ * rs232_1 configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_rs232_1 altera_up_avalon_rs232
+#define RS232_1_BASE 0x8200000
+#define RS232_1_IRQ 4
+#define RS232_1_IRQ_INTERRUPT_CONTROLLER_ID 0
+#define RS232_1_NAME "/dev/rs232_1"
+#define RS232_1_SPAN 8
+#define RS232_1_TYPE "altera_up_avalon_rs232"
 
 
 /*
