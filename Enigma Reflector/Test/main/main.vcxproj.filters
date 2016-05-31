@@ -15,21 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\USART.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Rotor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="__vm\.main.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Reflector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="USART.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Rotor.cpp">
+    <ClCompile Include="Reflector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\USART.cpp">
+    <ClCompile Include="USART.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

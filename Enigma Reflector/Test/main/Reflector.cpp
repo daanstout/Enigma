@@ -8,8 +8,8 @@ Reflector::Reflector()
 		this->reflectorConfiguration[i][0] = 'a' + i;
 	}
 
-	char configuration[27] = "enkqauywjicopblmdxzvfthrgs"; // Reflector B configuration
-	//char configuration[27] = "rdobjntkvehmlfcwzaxgyipsuq"; // Reflector C configuration
+	char configuration[27] = "enkqauywjicopblmdxzvfthrgs"; // Reflector B small configuration
+	//char configuration[27] = "rdobjntkvehmlfcwzaxgyipsuq"; // Reflector C small configuration
 
 
 	// Fils the array with the corresponding rotor configuration

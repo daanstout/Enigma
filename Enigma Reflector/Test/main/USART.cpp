@@ -37,3 +37,10 @@ uint8_t MY_USART::receiveByte(void) {
   return UDR0;                                /* return register value */
 }
 
+void MY_USART::println(char string[]) {
+	for (int i = 0; string[i] != '\0'; i++) {
+		loop_until_bit_is_set(UCSR0A, UDRE0);
+		UDR0 = string[i];
+	}
+}
+

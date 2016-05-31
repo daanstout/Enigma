@@ -87,6 +87,6 @@ extern "C" void __cxa_pure_virtual() {;}
 #include <..\main\main.ino>
 #include <..\main\Reflector.cpp>
 #include <..\main\Reflector.h>
-#include <..\..\..\Enigma Reflector\USART.cpp>
-#include <..\..\..\Enigma Reflector\USART.h>
+#include <..\main\USART.cpp>
+#include <..\main\USART.h>
 #endif

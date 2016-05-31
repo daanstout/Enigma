@@ -4,6 +4,7 @@
 #include <Arduino.h>					//	nodig voor de init()
 #include <string.h>
 #include "Reflector.h"
+//#include "USART.h"
 
 char command[30];
 char result;
@@ -14,20 +15,26 @@ Reflector reflector = Reflector();
 int main(void)
 {
 	init();								//	van arduino.h
-
 	// Sets the address of the slave
-	portAddress = B00010000;
+	portAddress = 16;
 
 	Wire.begin(portAddress);
 	Wire.onReceive(receiveCommand);
 	Wire.onRequest(sendCommand);
 
+	DDRB |= (1 << PORTB5);
+
 	while (1)
 	{
+		char string[40];
+		sprintf(string, "Test: %s\n", command);
+
 		// compares the input command to a string and executes a task and clears the command
 		if (strncmp(command, "getReflector", 12) == 0) {
+			PORTB ^= (1 << PORTB5);
 			result = reflector.getLetter(command[strlen(command) - 1]);
 			emptyCommand();
+			PORTB ^= (1 << PORTB5);
 		}
 	}
 }
