@@ -4,7 +4,6 @@
 #include <Arduino.h>					//	nodig voor de init()
 #include <string.h>
 #include "Reflector.h"
-//#include "USART.h"
 
 char command[30];
 char result;
