@@ -9,6 +9,7 @@ private:
 	char rotorLetter;
 	uint8_t ringConfiguration;
 	char triggerLetter;
+	char triggerLetterTwo;
 public:
 	Rotor();
 	void rotateForward();

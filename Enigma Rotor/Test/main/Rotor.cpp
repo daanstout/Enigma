@@ -13,6 +13,11 @@ Rotor::Rotor()
 	//char configuration[27] = "bdfhjlcprtxvznyeiwgakmusqo"; // Rotor III configuration
 	//char configuration[27] = "esovpzjayquirhxlnftgkdcmwb"; // Rotor IV configuration
 	//char configuration[27] = "vzbrgityupsdnhlxawmjqofeck"; // Rotor V configuration
+	//char configuration[27] = "jpgvoumfyqbenhzrdkasxlictw"; // Rotor VI configuration
+	//char configuration[27] = "nzjhgrcxmyswboufaivlpekqdt"; // Rotor VII configuration
+	//char configuration[27] = "fkqhtlxocbjspdzramewniuygv"; // Rotor VIII configuration
+	//char configuration[27] = "enkqauywjicopblmdxzvfthrgs"; // Rotor Beta configuration
+	//char configuration[27] = "rdobjntkvehmlfcwzaxgyipsuq"; // Rotor Gamma configuration
 
 	// Fils the array with the corresponding rotor configuration
 	for (int i = 0; i < 26; i++) {
@@ -23,7 +28,19 @@ Rotor::Rotor()
 	this->ringConfiguration = 0;
 	this->rotorPosition = 0;
 	this->rotorLetter = 'a'; // Start position of the rotor letter displayed
-	this->triggerLetter = 'q'; // The trigger letters of the rotors I-V are unique
+
+	// The rotors I - V only have one triggerLetter, the rotors VI - VIII have two triggerLetters
+	this->triggerLetter = 'q'; // Rotor I trigger
+	//this->triggerLetter = 'e'; // Rotor II trigger
+	//this->triggerLetter = 'v'; // Rotor III trigger
+	//this->triggerLetter = 'j'; // Rotor IV trigger
+	//this->triggerLetter = 'z'; // Rotor V trigger
+	//this->triggerLetter = 'z' // Rotor VI - VIII trigger
+
+	// The rotors VI - VIII have two triggers so when these rotors are used their triggerLetterTwo also has to be used
+	// Otherwise the triggerLetterTwo of the rotors I - V has to be used, which never will be triggered because the rotorLetter will never be '0'
+	//this->triggerLetterTwo = 'm' // Rotor VI - VIII second trigger
+	this->triggerLetterTwo = '0' // Rotor I - V second trigger (will never be triggered)
 }
 
 // Makes the rotor rotate forward
@@ -151,7 +168,7 @@ char Rotor::getInternalReverseLetter(char letter)
 // Gets the current trigger status of the rotor
 bool Rotor::getTriggered()
 {
-	if (this->triggerLetter == this->rotorLetter) {
+	if ((this->triggerLetter == this->rotorLetter) || (this->triggerLetterTwo == this->rotorLetter)) {
 		return true;
 	}
 	else {

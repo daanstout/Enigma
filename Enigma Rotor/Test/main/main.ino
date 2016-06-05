@@ -96,14 +96,14 @@ void receiveCommand(int amount) {
 			}
 			key = Wire.read();
 	}
+	//myUsart.println(command);
 }
 
 // Sends a command
 void sendCommand() {
 		Wire.write(result);
-		// clears the result and the command
+		// clears the result
 		result = 0;
-		emptyCommand();
 }
 
 // Empties the command string
