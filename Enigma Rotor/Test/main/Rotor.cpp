@@ -16,8 +16,8 @@ Rotor::Rotor()
 	//char configuration[27] = "jpgvoumfyqbenhzrdkasxlictw"; // Rotor VI configuration
 	//char configuration[27] = "nzjhgrcxmyswboufaivlpekqdt"; // Rotor VII configuration
 	//char configuration[27] = "fkqhtlxocbjspdzramewniuygv"; // Rotor VIII configuration
-	//char configuration[27] = "enkqauywjicopblmdxzvfthrgs"; // Rotor Beta configuration
-	//char configuration[27] = "rdobjntkvehmlfcwzaxgyipsuq"; // Rotor Gamma configuration
+	//char configuration[27] = "leyjvcnixwpbqmdrtakzgfuhos"; // Rotor Beta configuration
+	//char configuration[27] = "fsokanuerhmbtiycwlqpzxvgjd"; // Rotor Gamma configuration
 
 	// Fils the array with the corresponding rotor configuration
 	for (int i = 0; i < 26; i++) {
