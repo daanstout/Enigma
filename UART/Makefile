@@ -142,7 +142,7 @@ ACDS_VERSION := 15.1
 ELF := UART.elf
 
 # Paths to C, C++, and assembly source files.
-C_SRCS := hello_ucosii.c
+C_SRCS := main.c
 CXX_SRCS :=
 ASM_SRCS :=
 

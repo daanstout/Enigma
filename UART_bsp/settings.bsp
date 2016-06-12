@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>ucosii</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>2-jun-2016 18:43:46</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1464885826857</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>6-jun-2016 12:56:59</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1465210619648</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>C:\NIOS_Project_Files\software\UART_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>..\..\nios_system.sopcinfo</SopcDesignFile>
